@@ -1,29 +1,28 @@
 (function () {
     'use strict';
  
-    function Controller(UserService) {
+    function Controller($scope, UserService, TestService) {
         var vm = this;
         vm.user = null;
+        vm.tests = null;
  
-        function initController() {
-            // get current user
-            UserService.GetCurrent().then(function (user) {
-                vm.user = user;
-            });
-        }
-        
-        function getUsers() {
-        	// get a list of existing users
-        	UserService.GetAll().then(function (users) {
-        		vm.users = users;
+        function getAllTests() {
+        	TestService.GetTests().then(function(tests) {
+        		vm.tests = tests;
         	});
         }
         
+        function initController() {
+            UserService.GetCurrent().then(function (user) {
+                vm.user = user;
+            });
+            getAllTests();
+        }
+        
         initController();
-        getUsers();
     }
 
     angular
 	    .module('app')
-	    .controller('Home.IndexController', Controller);
+	    .controller('Home.IndexController', ['$scope', 'UserService', 'TestService', Controller]);
 })();

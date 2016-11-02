@@ -1,0 +1,61 @@
+<h2>Результаты теста "{{vm.testDetails.name}}"</h2>
+<div ng-if="vm.error">
+	<h3>{{vm.errorMessage}}</h3>
+	<p><a href="{{vm.testLink}}">{{vm.testLink}}</a></p>
+</div>
+<table class="table table-bordered table-striped" ng-show="!vm.error">
+	<tr>
+		<th rowspan="2">
+			<div class="checkbox" id="checkAll">
+				<span class="glyphicon glyphicon-check" ng-click="selectAllResults()"></span>
+			</div>
+		</th>
+		<th rowspan="2">
+			<span class="link" ng-click="vm.sortType = 'answerDate'; vm.sortReverse = !vm.sortReverse;">Дата </span>
+			<span ng-show="vm.sortType == 'answerDate' && !vm.sortReverse" class="fa fa-caret-down"></span>
+			<span ng-show="vm.sortType == 'answerDate' && vm.sortReverse" class="fa fa-caret-up"></span>
+		</th>
+		<th rowspan="2">
+			<span class="link" ng-click="vm.sortType = 'userName'; vm.sortReverse = !vm.sortReverse;">Имя пользователя </span>
+			<span ng-show="vm.sortType == 'userName' && !vm.sortReverse" class="fa fa-caret-down"></span>
+			<span ng-show="vm.sortType == 'userName' && vm.sortReverse" class="fa fa-caret-up"></span>
+		</th>
+		<th rowspan="2">
+			<span class="link" ng-click="vm.sortType = 'details._user.position'; vm.sortReverse = !vm.sortReverse;">Должность </span>
+			<span ng-show="vm.sortType == 'details._user.position' && !vm.sortReverse" class="fa fa-caret-down"></span>
+			<span ng-show="vm.sortType == 'details._user.position' && vm.sortReverse" class="fa fa-caret-up"></span>
+		</th>
+		<th rowspan="2">
+			<span class="link" ng-click="vm.sortType = 'details._user.branch'; vm.sortReverse = !vm.sortReverse;">Отдел </span>
+			<span ng-show="vm.sortType == 'details._user.branch' && !vm.sortReverse" class="fa fa-caret-down"></span>
+			<span ng-show="vm.sortType == 'details._user.branch' && vm.sortReverse" class="fa fa-caret-up"></span>
+		</th>
+		<th rowspan="2">
+			<span class="link" ng-click="vm.sortType = 'correctAnswers'; vm.sortReverse = !vm.sortReverse;">Результат </span>
+			<span ng-show="vm.sortType == 'correctAnswers' && !vm.sortReverse" class="fa fa-caret-down"></span>
+			<span ng-show="vm.sortType == 'correctAnswers' && vm.sortReverse" class="fa fa-caret-up"></span>
+		</th>
+		<th rowspan="2">Правильных ответов</th>
+		<th colspan="{{vm.testDetails.questions.length}}" class="text-center">Ответ правильный?</th>
+	</tr>
+	<tr>
+		<td ng-repeat="question in vm.testDetails.questions">{{question.text}}</td>
+	</tr>
+	<tr ng-repeat="res in vm.results | orderBy:vm.sortType:vm.sortReverse" ng-class="{archived: res.details.archived}">
+		<td ng-click="selectResult(res.details._id)">
+			<span class="glyphicon" ng-class="{true:'glyphicon-check',false:'glyphicon-unchecked'}[resultSelected(res.details._id)]"></span>
+		</td>
+		<td class="ng-hide">{{res.details._id}}</td>
+		<td>{{res.answerDate}}
+		<td>{{res.userName}}</td>
+		<td>{{res.details._user.position}}</td> 
+		<td>{{res.details._user.branch}}</td>
+		<td>{{res.correctAnswers / res.questionsTotal * 100}}</td>
+		<td>{{res.correctAnswers}}</td>
+		<td ng-repeat="question in res.details.questions">{{(question.answerIsCorrect) ? "да" : "нет"}}</td>
+	</tr>
+</table>
+<p>Выполнить действие для выбранных результатов:</p>
+<div class="btn btn-default" ng-click="archiveSelected()">Сделать архивными</div>
+<div class="btn btn-default" ng-click="unarchiveSelected()">Восстановить из архива</div>
+<div class="btn btn-danger" ng-click="deleteSelected()">Удалить</div>

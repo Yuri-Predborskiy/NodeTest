@@ -19,8 +19,12 @@ var questionObject = {
 };
 
 // Document schema for polls
-exports.PollSchema = new mongoose.Schema({
+//exports.PollSchema = new mongoose.Schema({
+var TestSchema = mongoose.Schema({
 	name: String,
 	questions: [questionObject],
-	isTest: Boolean
+	author: String
 });
+
+// export model
+exports.Test = mongoose.model('Test', TestSchema);

@@ -1,0 +1,23 @@
+<div class="page-header">
+	<h1>Панель управления тестами</h1>
+</div>
+
+<div>
+	<h2>Управление тестами</h2>
+	<a ui-sref="edit({id:'new'})" class="btn btn-primary">Создать новый тест</a>
+</div>
+
+<hr />
+
+<h2>Список активных тестов</h2>
+<div class="list-group" ng-view>
+	<table class="table table-bordered table-striped">
+		<tr ng-repeat="test in vm.tests">
+			<td class="col-xs-6">{{test.name}}</a></td>
+			<td class="col-xs-3"><a ui-sref="edit({id:test._id})" >Редактировать</a></td>
+			<td class="col-xs-3"><a ui-sref="allResults({id:test._id})">Посмотреть результаты</a></td>
+		</tr>
+	</table>
+</div>
+
+<p>&nbsp;</p>

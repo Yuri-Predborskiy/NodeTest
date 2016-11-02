@@ -1,3 +1,10 @@
-<h1>Hi {{vm.user.firstName}}!!</h1>
-<h2>User list:</h2>
-<div>{{vm.users}}</div>
+<h2>Здраствуйте, {{vm.user.firstName + " " + vm.user.lastName}}!!</h2>
+<h3>Список активных тестов</h3>
+<div class="list-group" ng-view>
+	<table class="table table-bordered table-striped">
+		<tr ng-repeat="test in vm.tests">
+			<td><a ui-sref="test({id:test._id})" class="col-xs-8">{{test.name}}</a></td>
+		</tr>
+	</table>
+</div>
+<p><a ui-sref="edit({id:'new'})" class="btn btn-primary">Создать новый тест</a></p>

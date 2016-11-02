@@ -1,0 +1,18 @@
+<form role="form" ng-submit="saveUserChoices()">
+	<div class="form-group">
+		<h1>{{vm.test.name}}</h1>
+		<div ng-repeat="question in vm.test.questions" class="question-holder">
+			<div class="question-name">Вопрос {{$index+1}}. {{question.text}}</div>
+			<div class="form-group choices">
+				<div class="text-small">Выберите {{(question.multipleChoices) ? "все правильные ответы" : "правильный ответ"}}</div>
+				<div ng-repeat="choice in question.choices">
+					<div class="choice form-control" ng-class="{'selected': choice.selected}" ng-click="choiceSelectToggle(question, choice)">
+						<span class="glyphicon " ng-class="{'glyphicon-check': choice.selected, 'glyphicon-unchecked': !choice.selected}"></span> {{choice.text}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<button type="submit" class="btn btn-primary pull-right">Сохранить ответы</button>
+</form>
+<p>&nbsp;</p>

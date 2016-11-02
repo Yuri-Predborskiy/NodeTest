@@ -1,0 +1,73 @@
+<div class="page-header">
+	<h1 ng-show="editExisting">Редактирование теста</h1>
+	<h1 ng-show="!editExisting">Создание нового теста</h1>
+</div>
+
+<form role="form" ng-submit="saveTest()">
+	<div class="form-group">
+		<div ng-show="editExisting">
+			<h2>Редактируется тест "{{vm.oldName}}"</h2>
+			<p>ID существующего теста: {{vm.test._id}}</p>
+			<p>Автор теста: {{vm.author}}</p>
+			<p>
+				<button type="button" ng-click="clear()">
+					<span class="glyphicon glyphicon-remove-sign"></span> Очистить форму
+				</button> форма будет очищена, тест будет сохранен как новый
+			</p>
+			<p>
+				<button type="button" ng-click="clearId()">
+					<span class="glyphicon glyphicon-remove-sign"></span> Очистить ID теста
+				</button> только ID будет очищен, тест будет сохранен как новый
+			</p>
+		</div>
+		<div><label for="testName">Введите название теста:</label></div>
+		<p><input type="text" class="form-control" ng-model="vm.test.name" id="testName" placeholder="Введите название теста"></p>
+		<div ng-repeat="question in vm.test.questions" class="question-holder">
+			<div class="question-frame">
+				<label for="testQuestion">Вопрос {{$index+1}}</label>
+				<input type="text" id="testQuestion" ng-model="question.text" class="form-control" placeholder="Введите текст вопроса">
+				<div class="form-group choices">
+					<label>Варианты ответа (выделите один или несколько вариантов как правильные)</label>
+					<div ng-repeat="choice in question.choices" class="choice-container" ng-class="{correct: choice.correct}">
+						<input type="text" ng-model="choice.text" class="form-control" placeholder="Введите текст варианта ответа">
+						<button type="button" class="btn btn-default" ng-click="choiceToggle(choice)">
+							<span class="glyphicon " ng-class="{'glyphicon-check': choice.correct, 'glyphicon-unchecked': !choice.correct}"></span> Правильный ответ
+						</button>
+						<button type="button" class="btn btn-default" ng-click="removeChoice(question, choice)" ng-class="{disabled: question.choices.length < 3}">
+							<span class="glyphicon glyphicon-remove"></span> Удалить вариант ответа
+						</button>
+					</div>
+					<button type="button" class="btn btn-default" ng-click="addChoice(question)">
+						<span class="glyphicon glyphicon-plus"></span> Добавить вариант ответа
+					</button>
+					<button type="button" class="btn btn-danger" ng-click="removeQuestion(question)" ng-class="{disabled: vm.test.questions.length < 2}">
+						<span class="glyphicon glyphicon-remove"></span> Удалить вопрос
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-xs-12">
+			<button type="button" class="btn btn-default" ng-click="addQuestion()">
+				<span class="glyphicon glyphicon-plus"></span> Добавить еще один вопрос
+			</button>
+		</div>
+	</div>
+	
+	<p><hr></p>
+	
+	<div class="row">
+		<div class="col-xs-6">
+			<a href="#/tests/list" class="btn btn-default" role="button">
+				<span class="glyphicon glyphicon-arrow-left"></span> Вернуться к списку тестов
+			</a>
+		</div>
+		<div class="col-xs-6">
+			<button class="btn btn-primary pull-right" type="submit"> Сохранить тест</button>
+		</div>
+	</div>
+	
+	<p>&nbsp;</p>
+</form>

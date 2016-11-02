@@ -1,41 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <title>MEAN Stack User Registration and Login Example Application</title>
+	<meta charset="utf-8" />
+	<title>Exist User Test</title>
  
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="app-content/app.css" rel="stylesheet" />
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="app-content/app.css" rel="stylesheet" />
+	<link href="app-content/style.css" rel="stylesheet" />
+	<link href="app-content/font-awesome.min.css" rel="stylesheet" />
+	<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
 </head>
-<body class="container">
-    <!-- header -->
-    <header>
-        <ul class="nav nav-tabs">
-            <li ng-class="{active: activeTab === 'home'}"><a ui-sref="home">Home</a></li>
-            <li ng-class="{active: activeTab === 'account'}"><a ui-sref="account">Account</a></li>
-            <li><a href="/login" target="_self">Logout</a></li>
-        </ul>
-        <div class="flash-message" ng-if="flash">
-            <div class="{{'alert alert-' + flash.type}}" ng-bind="flash.message"></div>
-        </div>
-    </header>
+<body class="container" ng-cloak>
+	<!-- header -->
+	<header>
+		<ul class="nav nav-tabs">
+			<li ng-class="{active: activeTab === 'home'}"><a ui-sref="home">Тестирование</a></li>
+			<li ng-class="{active: activeTab === 'tests'}"><a ui-sref="tests">Управление тестами</a></li>
+			<li ng-class="{active: activeTab === 'account'}"><a ui-sref="account">Учетная запись</a></li>
+			<li ng-class="{active: activeTab === 'userlist'}"><a ui-sref="userlist">Пользователи</a></li>
+			<li><a href="/login" target="_self">Выйти</a></li>
+		</ul>
+		<div class="flash-message" ng-if="flash">
+			<div class="{{'alert alert-' + flash.type}}" ng-bind="flash.message"></div>
+		</div>
+	</header>
  
-    <!-- main -->
-    <main ui-view></main>
+	<!-- main -->
+	<main ui-view></main>
  
-    <!-- footer -->
-    <footer></footer>
- 
-    <!-- external scripts -->
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
- 
-    <!-- application scripts -->
-    <script src="app.js"></script>
-    <script src="app-services/user.service.js"></script>
-    <script src="app-services/flash.service.js"></script>
-    <script src="home/index.controller.js"></script>
-    <script src="account/index.controller.js"></script>
+	<!-- footer -->
+	<footer></footer>
+
+	<!-- external scripts -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+	<!-- Angular Material Library -->
+	<script src="http://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+	<!-- application scripts -->
+	<script src="app.js"></script>
+	<script src="app-services/user.service.js"></script>
+	<script src="app-services/test.service.js"></script>
+	<script src="app-services/flash.service.js"></script>
+	<script src="home/index.controller.js"></script>
+	<script src="account/index.controller.js"></script>
+	<script src="userlist/index.controller.js"></script>
+	<script src="test/index.controller.js"></script>
+	<script src="test/item.controller.js"></script>
+	<script src="test/edit.controller.js"></script>
+	<script src="test/results.one.controller.js"></script>
+	<script src="test/results.all.controller.js"></script>
+	<script src="test/services.js"></script>
 </body>
 </html>

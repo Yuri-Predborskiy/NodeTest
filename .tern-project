@@ -1,14 +1,14 @@
 {
+  "ecmaVersion": 5,
   "plugins": {
-    "outline": {
+    "guess-types": {
       
     },
-    "node": {
+    "outline": {
       
     }
   },
   "libs": [
-    "ecma5",
-    "ecma6"
+    
   ]
 }

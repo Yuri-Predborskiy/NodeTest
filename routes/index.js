@@ -1,97 +1,68 @@
-// Connect to MongoDB using Mongoose
+var config = require('config.json');
+var jwt = require('jsonwebtoken');
 var mongoose = require('mongoose');
 var db;
-if (process.env.VCAP_SERVICES) {
-   var env = JSON.parse(process.env.VCAP_SERVICES);
-   db = mongoose.createConnection(env['mongodb-2.2'][0].credentials.url);
-} else {
-   db = mongoose.createConnection('localhost', 'pollsapp');
-}
+db = mongoose.createConnection(config.dbServer, config.dbName);
 
-// Get Poll schema and model
-var PollSchema = require('../models/Poll.js').PollSchema;
-var Poll = db.model('polls', PollSchema);
+// Get Test model
+var Test = db.model('Test', require('../models/test.model.js').TestModel);
 
 // Main application view
 exports.index = function(req, res) {
 	res.render('index');
 };
 
-// JSON API for list of polls
+// JSON API for list of tests
 exports.list = function(req, res) {
-	// Query Mongo for polls, just get back the question text
-	Poll.find({}, 'name', function(error, polls) {
-		res.json(polls);
+	// Query Mongo for tests, get only test names
+	Test.find({}, 'name', function(error, tests) {
+		res.json(tests);
 	});
 };
 
-// JSON API for getting a single poll
-exports.poll = function(req, res) {
-	// Poll ID comes in the URL
-	var pollId = req.params.id;
+// JSON API for getting a single test
+exports.test = function(req, res) {
+	// Test ID comes in the URL
+	var testId = req.params.id;
 	
-	var pollOptions = {
+	// convert to plain object from Mongo document
+	var testOptions = {
 			lean: true
-	}
+	};
 	
 	// projection - hide certain field with correct answers
 	var queryFilter = {
 			"questions.correctChoice": false
-	}
-	// Find the poll by its ID, use lean as we won't be changing it
-	Poll.findById(pollId, queryFilter, pollOptions, function(err, poll) {
-		if(poll) {
-			/*
-			for(i = 0; i < poll.questions.length; i++) {
-				poll.questions[i].correctAnswer = -1;
-			}
-			*/
-			var userVoted = false,
-					userChoice,
-					totalVotes = 0;
-
-			// Loop through poll choices to determine if user has voted
-			// on this poll, and if so, what they selected
-			for(c in poll.choices) {
-				var choice = poll.choices[c]; 
-
-				for(v in choice.votes) {
-					var vote = choice.votes[v];
-					totalVotes++;
-
-					if(vote.ip === (req.header('x-forwarded-for') || req.ip)) {
-						userVoted = true;
-						userChoice = { _id: choice._id, text: choice.text };
-					}
-				}
-			}
-
-			// Attach info about user's past voting on this poll
-			poll.userVoted = userVoted;
-			poll.userChoice = userChoice;
-
-			poll.totalVotes = totalVotes;
-		
-			res.json(poll);
+	};
+	// Find the test by its ID
+	Test.findById(testId, queryFilter, testOptions, function(err, test) {
+		// TODO: Check weather user already tried this test
+		// if yes, show them their result (calculate it)
+		if (test) { 
+			res.json(test); 
 		} else {
-			res.json({error:true});
+			res.json({error: true});
 		}
 	});
 };
 
-// JSON API for creating a new poll
+// JSON API for creating a new test
 exports.create = function(req, res) {
-	var reqBody = req.body,
+	var reqBody = req.body;
 			// Filter out choices with empty text
 			//choices = reqBody.choices.filter(function(v) { return v.text != ''; }),
-			// Build up poll object to save
-			pollObj = {name: reqBody.name, questions: reqBody.questions, isTest: reqBody.isTest};
-				
-	// Create poll model from built up poll object
-	var poll = new Poll(pollObj);
+			// Build up test object to save
+	var testObj = {
+			name: reqBody.name, 
+			questions: reqBody.questions, 
+			author: reqBody.user
+	};
+
+	// Create test model from built up test object
+	var test = new Test(testObj);
 	
-	// Save poll to DB
-	poll.save(function(err, doc) {
+	// Save test to DB
+	test.save(function(err, doc) {
 		if(err || !doc) {
 			throw 'Error';
 		} else {
@@ -100,22 +71,29 @@ exports.create = function(req, res) {
 	});
 };
 
+// submit answers
+exports.answer = function(req, res) {
+	var user = jwt.decode(req.session.token);
+	console.log("user is answering:");
+	console.log(user);
+};
+
 exports.vote = function(socket) {
 	socket.on('send:vote', function(data) {
 		var ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address.address;
 		
-		Poll.findById(data.poll_id, function(err, poll) {
-			var choice = poll.choices.id(data.choice);
+		Test.findById(data.test_id, function(err, test) {
+			var choice = test.choices.id(data.choice);
 			choice.votes.push({ ip: ip });
 			
-			poll.save(function(err, doc) {
+			test.save(function(err, doc) {
 				var theDoc = { 
 					question: doc.question, _id: doc._id, choices: doc.choices, 
 					userVoted: false, totalVotes: 0 
 				};
 
-				// Loop through poll choices to determine if user has voted
-				// on this poll, and if so, what they selected
+				// Loop through test choices to determine if user has voted
+				// on this test, and if so, what they selected
 				for(var i = 0, ln = doc.choices.length; i < ln; i++) {
 					var choice = doc.choices[i]; 
 

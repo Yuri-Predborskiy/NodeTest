@@ -34,13 +34,13 @@ router.post('/', function (req, res) {
 	}, function (error, response, body) {
 		if(error) {
 			return res.render('login', { 
-				error: 'An error occurred' 
+				error: 'Во время входа произошла ошибка. Повторите попытку позже' 
 			});
 		}
 		
 		if (!body.token) {
 			return res.render('login', { 
-				error: 'Username or password is incorrect', 
+				error: 'Некорректное имя или пароль пользователя', 
 				username: req.body.username 
 			});
 		}

@@ -6,9 +6,19 @@
     "start": "node app.js"
   },
   "dependencies": {
-	  "express": "3.4.3",
-		"socket.io": "~0.9.16",
-		"jade": "*",
-		"mongoose": ">= 3.8.0"
+    "angular": "1.5.8",
+    "bcryptjs": "^2.3.0",
+    "body-parser": "1.15.2",
+    "ejs": "2.5.1",
+    "express": "^4.14.0",
+    "express-jwt": "3.4.0",
+    "express-session": "1.14.0",
+    "jsonwebtoken": "^7.1.9",
+    "lodash": "^4.15.0",
+    "mongoose": "3.8.0",
+    "mongoskin": "^2.1.0",
+    "q": "^1.4.1",
+    "request": "^2.74.0",
+    "rootpath": "^0.1.2"
   }
 }

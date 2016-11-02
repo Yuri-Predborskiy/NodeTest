@@ -6,6 +6,8 @@
 
 var express = require('express');
 var router = express.Router();
+var jwt = require('jsonwebtoken');
+var routes = require('../routes/index');
 
 // use session auth to secure the angular app files
 router.use('/', function (req, res, next) {

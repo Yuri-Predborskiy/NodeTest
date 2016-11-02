@@ -1,0 +1,25 @@
+<h1>Результаты теста</h1>
+<div ng-if="vm.test.noResults">
+	<h2>Результаты тестирования не найдены.</h2>
+	<h3><a ui-sref="test({id:vm.test.testId})">Пройти тест</a></h2>
+</div>
+
+<div ng-if="!vm.test.noResults">
+	<div class="row">
+		<div class="result-text col-xs-12 col-sm-6 col-md-4">
+			<h3><strong>Название теста:</strong></h3>
+			<p class="text-l text-bold">{{vm.test.testName}}</p>
+			<h3><strong>Дата прохождения теста:</strong></h3>
+			<p class="text-l">{{vm.test.answerDate}}</p>
+		</div>
+		<div class="result-score  col-xs-12 col-sm-6 col-md-4">
+			<div class="result-container">
+				<span class="text-l">Ваш результат</span><br />
+				<span class="text-xl text-bold">{{vm.test.score}}</span><span class="text-l"><br />из 100</span>
+			</div>
+		</div>
+	</div>
+</div>
+<a ui-sref="home" class="btn btn-default" role="button">
+	<span class="glyphicon glyphicon-arrow-left"></span> Вернуться к списку тестов
+</a>

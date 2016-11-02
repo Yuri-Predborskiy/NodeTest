@@ -1,9 +1,3 @@
-/* The account index controller is the default controller 
- * for the account section of the angular app, it makes 
- * user object available to the view and exposes methods 
- * for updating or deleting the current user's account.
- * */
-
 (function () {
 	'use strict';
 	
@@ -21,7 +15,7 @@
 		function saveUser() {
 			UserService.Update(vm.user)
 				.then(function () {
-					FlashService.Success('User updated');
+					FlashService.Success('Данные обновлены');
 				})
 				.catch(function (error) {
 					FlashService.Error(error);

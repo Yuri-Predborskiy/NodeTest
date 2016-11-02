@@ -1,7 +1,6 @@
 /* The express user service encapsulates all data access 
- * and business logic for users behind a simple interface. 
- * It exposes methods for CRUD operations and user 
- * authentication.*/
+ * for users behind a simple interface. 
+ * It exposes methods for CRUD operations and user authentication.*/
 
 var config = require('config.json');
 var _ = require('lodash');
@@ -10,8 +9,7 @@ var bcrypt = require('bcryptjs');
 var Q = require('q');
 var mongoose = require('mongoose');
 var db = mongoose.createConnection(config.dbServer, config.dbName);
-
-var Users = db.model('users', require('../models/user.model.js').UserModel);
+var Users = db.model('User', require('../models/user.model.js').UserModel);
 
 var service = {};
 
@@ -46,17 +44,41 @@ function getById(_id) {
 	return deferred.promise;
 }
 
-function getAll() {
+// user is admin function - then = admin, catch = not admin or not found
+function userIsAdmin(_user) {
+	var deferred = Q.defer();
+	Users.findById(_user, { admin: true }, function(err, user) {
+		if(err) {
+			deferred.reject(err);
+		}
+		if(user && user.admin) {
+			deferred.resolve();
+		} else {
+			deferred.reject();
+		}
+	});
+	return deferred.promise;
+}
+
+function getAll(_user) {
 	// get all users from the database
 	var deferred = Q.defer();
-	Users.find({}, function(err, users) {
-		// find all documents in "users"
-		if (err) { deferred.reject(err); }
-		if (users) {
-			deferred.resolve(users);
-		} else {
-			deferred.resolve();
-		}
+	userIsAdmin(_user)
+	.then(function() {
+		Users.find({}, { hash: false }, { lean: true }, function(err, users) {
+			// find all users
+			if (err) { deferred.reject(err); }
+			if (users) {
+				deferred.resolve(users);
+			} else {
+				// this should never happen
+				deferred.resolve({ error: true, errorCode: 500, errorMessage: "No users found" });
+			}
+		});
+	})
+	.catch(function(err) {
+		// user is not admin
+		deferred.resolve({ error: true, errorCode: 401, errorMessage: "not authorized" });
 	});
 	return deferred.promise;
 }
@@ -103,7 +125,9 @@ function update(_id, userParams) {
 			// fields to update
 			user.firstName = userParams.firstName;
 			user.lastName = userParams.lastName;
-			user.username = userParams.username;
+			user.middleName = userParams.middleName;
+			user.position = userParams.position;
+			user.branch = userParams.branch;
 			
 			// update password if it was entered
 			if (userParams.password) {
@@ -149,11 +173,50 @@ function _delete(_id) {
 	return deferred.promise;
 }
 
+function updateAdminStatus(_user, userIds, newValue) {
+	var deferred = Q.defer();
+	userIsAdmin(_user)
+	.then(function() {
+		var query = { _id: { $in: userIds.map(mongoose.Types.ObjectId) } };
+		Users.update(query, { admin: newValue }, { multi: true }, function(err, data) {
+			if(err) {
+				deferred.reject(err);
+			}
+			deferred.resolve();
+		});
+	})
+	.catch(function() {
+		deferred.resolve({ error: true, errorDetails: "Not authorized" });
+	});
+	return deferred.promise;
+}
+
+function updateActiveState(_user, userIds, newValue) {
+	var deferred = Q.defer();
+	userIsAdmin(_user)
+	.then(function() {
+		var query = { _id: { $in: userIds.map(mongoose.Types.ObjectId) } };
+		Users.update(query, { active: newValue }, { multi: true }, function(err, data) {
+			if(err) {
+				console.log("error setting active flag to " + newValue + " on users: " + err);
+				deferred.reject(err);
+			}
+			deferred.resolve();
+		});
+	})
+	.catch(function() {
+		deferred.resolve({ error: true, errorDetails: "Not authorized" });
+	});
+	return deferred.promise;
+}
+
 service.authenticate = authenticate;
 service.getById = getById;
 service.getAll = getAll;
 service.create = create;
 service.update = update;
 service.delete = _delete;
+service.updateAdminStatus = updateAdminStatus;
+service.updateActiveState = updateActiveState;
 
 module.exports = service;

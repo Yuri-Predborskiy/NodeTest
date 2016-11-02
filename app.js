@@ -1,41 +1,37 @@
+require('rootpath')();
 var express = require('express');
+var session = require('express-session');
+var bodyParser = require('body-parser');
+var expressJwt = require('express-jwt');
+var config = require('config.json');
 var routes = require('./routes/index');
 var http = require('http');
 var path = require('path');
 
 var app = express();
 var server = http.createServer(app);
-var io = require('socket.io').listen(server);
 
 app.set('port', 3000);
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-app.use(express.favicon());
-app.use(express.logger('dev'));
-app.use(express.bodyParser());
-app.use(express.methodOverride());
-app.use(app.router);
-app.use(express.static(path.join(__dirname, 'public')));
+app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(session({ secret: config.secret, resave: false, saveUninitialized: true }));
 
-// catch 404 and forward to error handler
-app.use(function(err, req, res, next) {
-	if(!err) {
-		return next();
-	}
-	console.log(err.stack);
-	res.json({error: true});
+// use JWT auth to secure the api, leave register and login unsecured
+app.use('/api', expressJwt({ secret: config.secret }).unless({ path: ['/api/users/authenticate', '/api/users/register'] }));
+
+// routes
+app.use('/login', require('./controllers/login.controller'));
+app.use('/register', require('./controllers/register.controller'));
+app.use('/app', require('./controllers/app.controller'));
+app.use('/api/users', require('./controllers/api/users.controller'));
+app.use('/api/tests', require('./controllers/api/tests.router'));
+
+// make '/app' default route - redirect '/' requests to '/app'
+app.get('/', function (req, res) {
+	return res.redirect('/app');
 });
-
-//Main App Page
-app.get('/', routes.index);
-
-// MongoDB API Routes
-app.get('/polls/polls', routes.list);
-app.get('/polls/:id', routes.poll);
-app.post('/polls', routes.create);
-//app.post('/vote', routes.vote);
-
-io.sockets.on('connection', routes.vote);
 
 server.listen(app.get('port'), function(){
   console.log('Express server listening on port ' + app.get('port'));
